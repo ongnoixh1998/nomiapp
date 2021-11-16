@@ -1,6 +1,6 @@
 
 import {Button, Divider, Stack, Text, Modal, VStack, HStack, Input} from "native-base";
-import React, {memo, useState} from "react";
+import React, {memo, useEffect, useState} from "react";
 import {StyleSheet, TextInput, View} from "react-native";
 import NumberFormat from "react-number-format";
 import {receivePackage} from "../../../services/OrderService";
@@ -14,6 +14,9 @@ const OrderQRScannedItem = ({data,onChangeValue}:OrderQRScannedItemType)=>{
     const [showModal, setShowModal] = useState(false)
     const [packageReceived,setPackageReceived] = useState<any>(0)
 
+    useEffect(()=>{
+        setPackageReceived(data.countPackage?data.countPackage:0);
+    },[])
     const getStatusName = (status:string)=>{
         let statusName = "Chưa nhận hàng";
         switch (status) {

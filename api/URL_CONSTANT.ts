@@ -1,5 +1,6 @@
 const BASE_URL = "https://hanghieu.nomi.vn";
 export const LOGIN_URL = BASE_URL+"/authentication/login";
+export const CHECK_TOKEN = BASE_URL+"/authentication/check-token";
 /**
  * Address
  * */
@@ -44,3 +45,8 @@ export const GHN_CANCEL = BASE_URL+"/api/ghn/cancel";
 export const GHN_TRACKING = BASE_URL+"/api/ghn/tracking";
 export const GHN_FINDALLBYORDERID = BASE_URL+"/api/ghn/get-list-order-byid";
 /** END GHN*/
+/** PARTNER */
+export const PARTNER_FINDALL = BASE_URL+"/api/admin/partner";
+export const PARTNER_SAVE = BASE_URL+"/api/admin/partner";
+export const PARTNER_DELETE = BASE_URL+"/api/admin/partner";
+/** END PARTNER*/

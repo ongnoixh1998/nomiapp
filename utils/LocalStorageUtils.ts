@@ -11,7 +11,7 @@ export const  useSetLocalStorage = (key:string,value:any,callback?:any)=>{
 export const useGetLocalStorage = async (key:string,callback?:any)=>{
     const data = await AsyncStorage.getItem(key);
     if (data){
-
+        if (callback) callback(data);
         return JSON.parse(data);
     }
     return null;

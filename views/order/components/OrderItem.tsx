@@ -1,14 +1,19 @@
-import {StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import React, {memo, useEffect} from "react";
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import { useNavigation } from "@react-navigation/native";
 import moment from 'moment';
 import NumberFormat from 'react-number-format';
+import CheckBox from '@react-native-community/checkbox';
+import Clipboard from '@react-native-clipboard/clipboard';
+import {useToast} from "native-base";
 interface OrderItemType {
     data:any,
-
+    onChangeCheck?:any,
+    checked:boolean
 }
-const OrderItem = ({data}:OrderItemType)=>{
+const OrderItem = ({data,onChangeCheck,checked}:OrderItemType)=>{
+    const toast = useToast();
     useEffect(()=>{
 
     })
@@ -19,15 +24,12 @@ const OrderItem = ({data}:OrderItemType)=>{
             itemId: data.id,
         });
     }
-    const quickEdit = ()=>{
 
-    }
-    const tracking = ()=>{
-
-    }
-    const gotoQR = ()=>{
+    const gotoGHN = ()=>{
         // @ts-ignore
-        navigation.navigate('qrcode')
+        navigation.navigate('ghnscreen',{
+            orderId:data.id
+        })
     }
     const getDateTime = (time:number) => {
         const now = new Date();
@@ -90,17 +92,45 @@ const OrderItem = ({data}:OrderItemType)=>{
         }
         return ""
     }
+    const handleCheck = ()=>{
+        console.log("handle check")
+        if (onChangeCheck){
+            onChangeCheck(data.id)
+        }
+    }
+    const copyPhone = (phone:string)=>{
+        Clipboard.setString(phone)
+        toast.show({
+            status:'success',
+            placement:'top',
+            title:'Thông báo',
+            description:'Đã copy SDT thành công'
+        })
+    }
     return(
         <View style={styles.container}>
-            <View style={{display:'flex',flexDirection:'row',alignItems:'center'}}>
-                <Text style={styles.fontBold}>Đơn hàng:</Text>
-                <Text style={styles.fontBold}>{data.orderCode}</Text>
-                <FontAwesome5 style={{...styles.fontBold,marginLeft:10}} name={'clone'}/>
+            <View style={{display:'flex',flexDirection:'row',alignItems:'center',justifyContent:"space-between",borderBottomWidth:1,marginBottom:5,borderColor:"#ea6d09",padding:5}}>
+                <View style={{display:"flex",flexDirection:"row",alignItems:"center"}}>
+                    <Text style={styles.fontBold}>Đơn hàng:</Text>
+                    <Text style={styles.fontBold}>{data.orderCode}</Text>
+                    <TouchableOpacity onPress={()=>copyPhone(data.phoneNumber)}>
+                        <FontAwesome5  style={{...styles.fontBold,marginLeft:10}} name={'clone'}/>
+                    </TouchableOpacity>
+                </View>
+                <View>
+                    <TouchableOpacity onPress={gotoGHN}>
+                        <Text style={{padding:5,backgroundColor:"#1aabec",borderRadius:10,fontWeight:"bold",color:"#fff"}}>Xem HDGHN</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
             <View style={{display:"flex",flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}>
                 <Text style={{color:"#0b21e5",fontWeight:"bold"}}>{getDateTime(data.createDate)}</Text>
-                <Text onPress={gotoDetail}
-                      style={{...getColor(data.status),padding:5,borderRadius:10,fontWeight:"bold"}}>{getStatusName(data.status)}</Text>
+                <View style={{display:"flex",flexDirection:"row",alignItems:"center"}}>
+                    <Text onPress={gotoDetail}
+                          style={{...getColor(data.status),padding:5,borderRadius:10,fontWeight:"bold"}}>{getStatusName(data.status)}</Text>
+                 <CheckBox value={checked} onChange={handleCheck}/>
+                </View>
+
             </View>
             <View style={styles.row}>
                 <Text style={styles.col40}>Khách hàng:</Text>

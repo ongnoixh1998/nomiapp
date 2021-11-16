@@ -37,7 +37,10 @@ const QRScannedScreen = () => {
 
             return updated
         });
-
+        const params: any = route.params;
+        qrScan(params.id).then((results) => {
+            setList(results.data);
+        })
     }, [])
     return (
         <View style={{padding: 10,flex:1}}>

@@ -1,0 +1,13 @@
+export const REMOVE_ACTION = "remove";
+export const TRASH_ACTION = "trash";
+export const RESTORE_ACTION = "restore";
+export const PRINT_ACTION = "print";
+export const PENDDING_ACTION = "pendding";
+export const CANCEL_ACTION = "cancel";
+export const SUCCESS_ACTION = "success";
+export const PROCESSING_ACTION = "processing";
+export const SHIPPING_ACTION = "shipping";
+export const AWAITINGADDINTIONDELIVERY_ACTION = "awaitingadditionaldelivery";
+export const PARTIALPAID_ACTION = "partiallypaid";
+export const PAID_ACTION = "paid";
+export const SEARCH_ACTION = "search"

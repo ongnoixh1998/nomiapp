@@ -1,5 +1,6 @@
 import {fetchAPI} from "../utils/FetchAPI";
 import {
+    ORDER_ACTION,
     ORDER_COUNT_BY_STATUS, ORDER_CREATE,
     ORDER_FINDALL,
     ORDER_FINDBYID,
@@ -28,8 +29,12 @@ export const createAndUpdate_API = async (params:any)=>{
     const respones = await fetchAPI(ORDER_CREATE,"POST",params);
     return respones
 }
-export const changeStatus_API = ()=>{
-
+export const action_API = async (action:string,ids:number[])=>{
+    const paramsRequest = {
+        action:action,
+        ids:ids
+    }
+    return await fetchAPI(ORDER_ACTION,"POST",paramsRequest);
 }
 export const findAllTrackingOrder_API = async (id:number)=>{
     const respones = await fetchAPI(ORDER_TRACKING+"?orderId="+id,"GET");

@@ -1,7 +1,21 @@
-import {createAndUpdate_API, findByOrder_API, getFee_API, getServices_API} from "../api/GHNAPI";
+import {
+    cancel_API,
+    createAndUpdate_API,
+    findAll_API,
+    findByOrder_API,
+    getFee_API,
+    getServices_API
+} from "../api/GHNAPI";
 export interface GHNFINDTYPE {
     orderId?:string,
     ghnOrder?:string
+}
+export const findAll = async (orderId?:number)=>{
+    const results = await findAll_API(orderId);
+    return results
+}
+export const cancel = async (order_code:string)=>{
+    return await cancel_API(order_code);
 }
 export const findByOrder = async (params:GHNFINDTYPE)=>{
     const results  = await findByOrder_API(params);

@@ -8,6 +8,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import LoginScreen from "../views/user/LoginScreen";
 import {createDrawerNavigator} from "@react-navigation/drawer";
+import SplashScreen from "../views/splash/SplashScreen";
 const NativeTab = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -59,8 +60,11 @@ const RootTab = () => {
     return (
         <NavigationContainer>
             <NativeTab.Navigator screenOptions={{}}
-                                 initialRouteName={'login'}
+                                 initialRouteName={'splashscreen'}
                                  defaultScreenOptions={{headerTransparent:true}}>
+                <NativeTab.Screen name={'splashscreen'}
+                                  options={{headerShown: false}}
+                                  component={SplashScreen}/>
                 <NativeTab.Screen name={'root'}
                                   options={{headerShown: false}}
                                   component={DrawerLayout}/>

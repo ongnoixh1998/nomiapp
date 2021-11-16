@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import {createStackNavigator} from "@react-navigation/stack";
 const Stack = createStackNavigator();
@@ -11,7 +10,8 @@ import QRScannedScreen from "../views/qr/QRScannedScreen";
 import GHNDetailScreen from "../views/ghn/GHNDetailScreen";
 import GHNScreen from "../views/ghn/GHNScreen";
 import TrackingOrderScreen from "../views/order/TrackingOrderScreen";
-import {useState} from "react";
+import OrderSearchScreen from "../views/order/OrderSearchScreen";
+
 const OrderStack =  ({navigation,route}:any)=>{
     const listHiderTabbar = ["qrcode","ghndetail",'detail','orderaddress'];
     React.useLayoutEffect(() => {
@@ -46,14 +46,19 @@ const OrderStack =  ({navigation,route}:any)=>{
                           key={'ghndetail'}
                           options={{title:"Chi tiết đơn hàng"}}
                           component={GHNDetailScreen} />
-            <Stack.Screen name={'ghn'}
-                          key={'ghn'}
-                          options={{title:"Danh sách đơn hàng GHN"}}
-                          component={GHNScreen} />
+
             <Stack.Screen name={'trackingorder'}
                           key={'trackingorder'}
                           options={{title:"Thông tin vận chuyển TQ"}}
                           component={TrackingOrderScreen} />
+            <Stack.Screen name={'ordersearch'}
+                          key={'ordersearch'}
+                          options={{title:"Tìm kiếm hóa đơn"}}
+                          component={OrderSearchScreen} />
+            <Stack.Screen name={'ghnscreen'}
+                          key={'ghnscreen'}
+                          options={{title:"Danh sách hóa đơn GHN"}}
+                          component={GHNScreen} />
         </Stack.Navigator>
     )
 }

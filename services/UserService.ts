@@ -1,4 +1,4 @@
-import {login_api} from "../api/UserAPI";
+import {checkToken_api, login_api} from "../api/UserAPI";
 import {useGetLocalStorage, useRemoveLocalStorage, useSetLocalStorage} from "../utils/LocalStorageUtils";
 
 export const login = async (username:string,password:string)=>{
@@ -10,11 +10,13 @@ export const login = async (username:string,password:string)=>{
         return false;
     }
 }
+export const checkToken = async (token:string)=>{
+    return await checkToken_api(token)
+}
 export const getToken = async ()=>{
     return await useGetLocalStorage("user.token")
 }
 export const logout = async ()=>{
-    console.log("logout")
     return await useRemoveLocalStorage("user.token")
 }
 export const register = ()=>{

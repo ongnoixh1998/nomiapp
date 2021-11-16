@@ -2,26 +2,20 @@ import {Image, StatusBar, Text, TouchableOpacity, View} from "react-native";
 import React from "react";
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import {useNavigation} from "@react-navigation/native";
+import {logout} from "../../services/UserService";
+import {Button} from "native-base";
 const UserScreen = ()=>{
     const navigation = useNavigation();
-    const gotoProfile = ()=>{
-        // @ts-ignore
-        navigation.navigate("profile")
+    const handlerLogout = ()=>{
+        logout().then((results)=>{
+            console.log("logout")
+            // @ts-ignore
+            navigation.navigate("login")
+        })
     }
     return(
-        <View >
-            <View style={{position:"relative",height:200}}>
-                <Image source={require('../../static/imgs/gradient.png')}
-                       style={{position:"absolute",width:'100%',top:0,left:0,right:0,bottom:0,height:'100%'}}/>
-                <View style={{display:"flex",justifyContent:"flex-end",flexDirection:"row",padding:10}}>
-                    <TouchableOpacity onPress={gotoProfile} >
-                        <Icon name={'cog'} size={25}/>
-                    </TouchableOpacity>
-                </View>
-            </View>
-            <View>
-
-            </View>
+        <View>
+            <Button color={'#f31c94'} onPress={handlerLogout}>Đăng xuất</Button>
 
         </View>
     )
