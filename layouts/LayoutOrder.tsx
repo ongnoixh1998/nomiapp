@@ -154,7 +154,7 @@ const LayoutOrder = ({loading = false, children, callbackActions,totalElements}:
                             </HStack>
                         </HStack>
                         <View>
-                            <TextInput style={{backgroundColor:"#fff",borderRadius:20}}
+                            <TextInput style={{backgroundColor:"#fff",borderRadius:20,padding:10}}
                                        value={inputSearch}
                                        onChangeText={(text => onChangeInputSearch(text))}
                                        placeholder={'Tìm kiếm'}/>

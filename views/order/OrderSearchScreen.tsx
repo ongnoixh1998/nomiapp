@@ -63,6 +63,7 @@ const OrderSearchScreen = ()=>{
                 <Text style={{fontWeight:"bold"}}>Từ khóa tìm kiếm</Text>
                 <TextInput
                     value={keyword}
+                    style={{padding:10}}
                     onChangeText={(text => setKeyword(text))}
                     placeholder={"Từ khóa tìm kiếm"}/>
             </View>

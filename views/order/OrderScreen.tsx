@@ -113,7 +113,7 @@ export default function OrderScreen(props: any) {
     }
     const onRefreshData = () => {
         setRefreshing(true)
-        findAll(0, pageSize, filter, host, keyword).then((results) => {
+        findAll(0, pageSize, '', '', '').then((results) => {
             setPage(0)
             setTotalPage(results.data.totalPages);
             setTotalElement(results.data.totalElements);
