@@ -29,8 +29,8 @@ export const ORDER_TRACKING = BASE_URL+"/api/admin/order/tracking";
 export const ORDER_EXCHANGE_RATE_TRACKING = BASE_URL+"/api/admin/order/exchange-rate-tracking";
 export const ORDER_STATICTIS_TRACKING = BASE_URL+"/api/admin/dashboard/statictis-tracking";
 export const QR_SCAN = BASE_URL+"/api/admin/order/findallbyladingcode";
-export const TRACK_RECEIVE_PRODUCT = BASE_URL+"/api/admin/order/tracking-getproduct" +
-    "";
+export const TRACK_RECEIVE_PRODUCT = BASE_URL+"/api/admin/order/tracking-getproduct";
+export const UPDATE_TRACK_PACKAGE = BASE_URL+"/api/admin/order/track-package";
 /** End Order */
 /** GHN */
 export const GHN_SETTING = BASE_URL+"/api/ghn/setting";
@@ -50,3 +50,6 @@ export const PARTNER_FINDALL = BASE_URL+"/api/admin/partner";
 export const PARTNER_SAVE = BASE_URL+"/api/admin/partner";
 export const PARTNER_DELETE = BASE_URL+"/api/admin/partner";
 /** END PARTNER*/
+/** REPORT */
+export const REPORT_STATISTIC_AREA= BASE_URL+"/api/admin/report/statistic-area";
+/** END REPORT */

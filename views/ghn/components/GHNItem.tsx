@@ -1,4 +1,4 @@
-import {View, Text, FlatList, StyleSheet} from "react-native";
+import {View, Text, FlatList, StyleSheet, Linking} from "react-native";
 import React, {useState} from "react";
 import {Button, HStack, Input, Modal, useToast} from "native-base";
 import NumberFormat from "react-number-format";
@@ -55,7 +55,11 @@ const GHNItem = ({data,onRemove}: GHNItemType) => {
         })
 
     }
+    const track = ()=>{
+        Linking.openURL("https://donhang.ghn.vn/?order_code="+data.orderCodeGhn).then((results)=>{
 
+        })
+    }
     return (
         <View style={{...styles.contaier}}>
             <View style={{...styles.row, flexDirection: "row", justifyContent: "space-between"}}>
@@ -97,10 +101,11 @@ const GHNItem = ({data,onRemove}: GHNItemType) => {
                               suffix={' đ'}
                               renderText={(text) => <Text style={{...styles.ml5, ...styles.fontBold}}>{text}</Text>}/>
             </View>
-            <View style={{...styles.row, flexDirection: "row", justifyContent: "flex-end"}}>
-                <Button onPress={()=>setShowModal(true)} backgroundColor={'red.500'} marginRight={'3'} >Hủy</Button>
+            <HStack style={{...styles.row, flexDirection: "row", justifyContent: "flex-end"}} space={'3'}>
+                <Button onPress={()=>setShowModal(true)} backgroundColor={'red.500'}>Hủy</Button>
                 <Button onPress={gotoDetail}>Xem chi tiết</Button>
-            </View>
+                <Button onPress={track} backgroundColor={'purple.600'} >Tra cứu</Button>
+            </HStack>
             <Modal isOpen={showModal} onClose={() => setShowModal(false)} size="lg">
                 <Modal.Content maxWidth="350">
                     <Modal.CloseButton />

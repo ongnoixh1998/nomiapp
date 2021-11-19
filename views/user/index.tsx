@@ -1,6 +1,5 @@
-import {Image, StatusBar, Text, TouchableOpacity, View} from "react-native";
+import { View} from "react-native";
 import React from "react";
-import Icon from 'react-native-vector-icons/FontAwesome5'
 import {useNavigation} from "@react-navigation/native";
 import {logout} from "../../services/UserService";
 import {Button} from "native-base";

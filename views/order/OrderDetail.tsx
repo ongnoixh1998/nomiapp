@@ -158,19 +158,18 @@ const OrderDetail = ({navigation,route}:any)=>{
                         </View>
 
                     </View>
-                    <FlatList data={details}
-                              renderItem={({item,index})=>{
-                                  return(
-                                      <ItemDetail key={index} data={item}
-                                                  price={item.price}
-                                                  index={index}
-                                                  owe={item.owe}
-                                                  quantity={item.quantity}
-                                                  onRemove={onRemoveItem}
-                                                  onChangeValue={onChangeValue}/>
-                                  )
-                              }}
-                    />
+                    {details && details.map((item:any,index:number)=>{
+                        return(
+                            <ItemDetail key={index} data={item}
+                                        price={item.price}
+                                        index={index}
+                                        owe={item.owe}
+                                        quantity={item.quantity}
+                                        onRemove={onRemoveItem}
+                                        onChangeValue={onChangeValue}/>
+                        )
+                    })}
+
                     <View style={{borderRadius:10,backgroundColor:"#fff",padding:10,marginBottom:20}}>
                         <View style={{display:"flex",justifyContent:"space-between",flexDirection:"row",marginTop:5}}>
                             <Text>Tổng tiền hàng:</Text>

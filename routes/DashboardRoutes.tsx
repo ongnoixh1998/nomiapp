@@ -11,7 +11,7 @@ export default function (){
     return(
         <Stack.Navigator >
             <Stack.Screen name={'dashboard'}
-                          options={{ title: 'Báo cáo' }}
+                          options={{ title: 'Báo cáo' ,headerTitleAlign:"center"}}
                           component={DashboardScreen} />
         </Stack.Navigator>
     )

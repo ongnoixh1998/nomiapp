@@ -1,22 +1,31 @@
-import {FlatList, Text, View} from "react-native";
-import React, {useCallback, useEffect, useState} from "react";
+import {FlatList, Text, TouchableOpacity, View} from "react-native";
+import React, {useCallback, useEffect, useLayoutEffect, useState} from "react";
 import GHNItem from "./components/GHNItem";
 import {findAll} from "../../services/GHNService";
 import {useNavigation, useRoute} from "@react-navigation/native";
 import LoadingScreen from "../loading/LoadingScreen";
 import {Button} from "native-base";
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 const GHNScreen = ()=>{
     const navigation = useNavigation();
+
     const route = useRoute();
     const params:any = route.params;
     const [loading,setLoading] = useState(true);
     const [list,setList] = useState([])
     useEffect(()=>{
-        console.log(params.orderId)
         findAll(params.orderId).then((results)=>{
             setList(results.data);
             setLoading(false)
         })
+    },[])
+
+    useLayoutEffect(()=>{
+        navigation.setOptions({headerRight:()=>(
+                <TouchableOpacity onPress={gotoCreate}>
+                    <FontAwesome5 style={{marginRight:20}} name={'plus'} size={30}/>
+                </TouchableOpacity>
+            )});
     },[])
     const loadAll = ()=>{
         setLoading(true);
@@ -52,15 +61,6 @@ const GHNScreen = ()=>{
     )
     return(
         <View style={{padding:10}}>
-            <View style={{display:"flex",flexDirection:"row",justifyContent:"space-between",backgroundColor:"#fff",marginBottom:10,padding:10,alignItems:"center"}}>
-                <Text style={{fontWeight:"bold"}}>Số lượng HD:0</Text>
-                {
-                    params.orderId?
-                        <Button onPress={gotoCreate}>Thêm</Button>:
-                        <Text></Text>
-                }
-
-            </View>
 
             <FlatList data={list}
                       ItemSeparatorComponent={() => <View style={{height: 10}}/>}

@@ -1,4 +1,4 @@
-import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Linking, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import React, {memo, useEffect} from "react";
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import { useNavigation } from "@react-navigation/native";
@@ -6,7 +6,9 @@ import moment from 'moment';
 import NumberFormat from 'react-number-format';
 import CheckBox from '@react-native-community/checkbox';
 import Clipboard from '@react-native-clipboard/clipboard';
-import {useToast} from "native-base";
+import {Button, Divider, HStack, useToast, VStack} from "native-base";
+import CurrencyFormat from "../../../components/CurrencyFormat";
+import Feather from "react-native-vector-icons/Feather";
 interface OrderItemType {
     data:any,
     onChangeCheck?:any,
@@ -16,7 +18,7 @@ const OrderItem = ({data,onChangeCheck,checked}:OrderItemType)=>{
     const toast = useToast();
     useEffect(()=>{
 
-    })
+    },[])
     const navigation = useNavigation();
     const gotoDetail = ()=>{
         // @ts-ignore
@@ -24,7 +26,12 @@ const OrderItem = ({data,onChangeCheck,checked}:OrderItemType)=>{
             itemId: data.id,
         });
     }
-
+    const gotoTrackingOrderScreen = ()=>{
+        // @ts-ignore
+        navigation.navigate("trackingorder",{
+            id:data.id
+        });
+    }
     const gotoGHN = ()=>{
         // @ts-ignore
         navigation.navigate('ghnscreen',{
@@ -93,7 +100,6 @@ const OrderItem = ({data,onChangeCheck,checked}:OrderItemType)=>{
         return ""
     }
     const handleCheck = ()=>{
-        console.log("handle check")
         if (onChangeCheck){
             onChangeCheck(data.id)
         }
@@ -107,6 +113,9 @@ const OrderItem = ({data,onChangeCheck,checked}:OrderItemType)=>{
             description:'Đã copy SDT thành công'
         })
     }
+    const gotoCall = ()=>{
+        Linking.openURL(`tel:${data.phoneNumber}`)
+    }
     return(
         <View style={styles.container}>
             <View style={{display:'flex',flexDirection:'row',alignItems:'center',justifyContent:"space-between",borderBottomWidth:1,marginBottom:5,borderColor:"#ea6d09",padding:5}}>
@@ -118,112 +127,73 @@ const OrderItem = ({data,onChangeCheck,checked}:OrderItemType)=>{
                     </TouchableOpacity>
                 </View>
                 <View>
-                    <TouchableOpacity onPress={gotoGHN}>
-                        <Text style={{padding:5,backgroundColor:"#1aabec",borderRadius:10,fontWeight:"bold",color:"#fff"}}>Xem HDGHN</Text>
-                    </TouchableOpacity>
+                    <View style={{display:"flex",flexDirection:"row",alignItems:"center",paddingLeft:15}}>
+                        <Text onPress={gotoDetail}
+                              style={{...getColor(data.status),padding:5,borderRadius:10,fontWeight:"bold"}}>{getStatusName(data.status)}</Text>
+                        <CheckBox value={checked} onChange={handleCheck}/>
+                    </View>
                 </View>
             </View>
-            <View style={{display:"flex",flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}>
+            <View style={{display:"flex",flexDirection:"row",alignItems:"center"}}>
                 <Text style={{color:"#0b21e5",fontWeight:"bold"}}>{getDateTime(data.createDate)}</Text>
-                <View style={{display:"flex",flexDirection:"row",alignItems:"center"}}>
-                    <Text onPress={gotoDetail}
-                          style={{...getColor(data.status),padding:5,borderRadius:10,fontWeight:"bold"}}>{getStatusName(data.status)}</Text>
-                 <CheckBox value={checked} onChange={handleCheck}/>
-                </View>
+                <Text> - </Text>
+                <Text style={{fontWeight:"bold"}}>{data.fullName}</Text>
 
             </View>
-            <View style={styles.row}>
-                <Text style={styles.col40}>Khách hàng:</Text>
-                <Text style={styles.col60}>{data.fullName}</Text>
-            </View>
-            <View style={styles.row}>
-                <Text style={styles.col40}>Tiền hàng:</Text>
-                <Text style={{...styles.col40}}>
-                    <NumberFormat value={data.productAmount}
-                                  thousandSeparator={true}
-                                  displayType={'text'}
-                                  renderText={(text)=> <Text>{text}</Text>}
-                                  suffix={' đ'} />
-                </Text>
-            </View>
-            <View style={styles.row}>
-                <Text style={styles.col40}>Phí vận chuyển:</Text>
-                <Text style={{...styles.col40}}>
-                    <NumberFormat value={data.ship}
-                                  thousandSeparator={true}
-                                  displayType={'text'}
-                                  renderText={(text)=> <Text>{text}</Text>}
-                                  suffix={' đ'} />
-                </Text>
-            </View>
-            <View style={styles.row}>
-                <Text style={styles.col40}>Giá vốn:</Text>
-                <Text style={{...styles.col40}}>
-                    <NumberFormat value={data.cost}
-                                  thousandSeparator={true}
-                                  displayType={'text'}
-                                  renderText={(text)=> <Text>{text}</Text>}
-                                  suffix={' đ'} />
-                </Text>
-            </View>
-            <View style={styles.row}>
-                <Text style={styles.col40}>Chi phí khác:</Text>
-                <Text style={{...styles.col40}}>
-                    <NumberFormat value={data.incurredCost}
-                                  thousandSeparator={true}
-                                  displayType={'text'}
-                                  renderText={(text)=> <Text>{text}</Text>}
-                                  suffix={' đ'} />
-                </Text>
-            </View>
-            <View style={styles.row}>
-                <Text style={styles.col40}>Đã thanh toán:</Text>
-                <Text style={{...styles.col40}}>
-                    <NumberFormat value={data.paid}
-                                  thousandSeparator={true}
-                                  displayType={'text'}
-                                  renderText={(text)=> <Text>{text}</Text>}
-                                  suffix={' đ'} />
-                </Text>
+            <View style={{flexDirection:"row",flexWrap:"wrap",marginTop:10}}>
+                <VStack space={'3'} style={{width:'60%'}}>
+                    <View style={{flexDirection:"row",justifyContent:"space-between",paddingRight:50}}>
+                        <Text style={{fontWeight:"bold"}}>Tiền hàng:</Text>
+                        <CurrencyFormat value={data.productAmount} style={{fontWeight:"bold"}} surfix={'đ'}/>
+                    </View>
+                    <View style={{flexDirection:"row",justifyContent:"space-between",paddingRight:50}}>
+                        <Text style={{fontWeight:"bold"}}>Tiền ship:</Text>
+                        <CurrencyFormat value={data.ship} style={{fontWeight:"bold"}} surfix={'đ'}/>
+                    </View>
+                    <View style={{flexDirection:"row",justifyContent:"space-between",paddingRight:50}}>
+                        <Text style={{fontWeight:"bold"}}>Đã thanh toán:</Text>
+                        <CurrencyFormat value={data.paid} style={{fontWeight:"bold"}} surfix={'đ'}/>
+                    </View>
+                    <View style={{flexDirection:"row",justifyContent:"space-between",paddingRight:50}}>
+                        <Text style={{fontWeight:"bold"}}>Tổng đơn:</Text>
+                        <CurrencyFormat value={data.orderAmount} style={{fontWeight:"bold"}} surfix={'đ'}/>
+                    </View>
+                    <View style={{flexDirection:"row",justifyContent:"space-between",paddingRight:50}}>
+                        <Text style={{fontWeight:"bold"}}>COD:</Text>
+                        <CurrencyFormat value={String(data.orderAmount-data.paid)} style={{fontWeight:"bold"}} surfix={'đ'}/>
+                    </View>
+                </VStack>
+                <VStack space={'3'} style={{width:'40%',alignItems:"flex-end"}}>
+                    <TouchableOpacity onPress={gotoCall}>
+                        <Feather name={'phone-call'} size={25} color={'#ff0000'} />
+                    </TouchableOpacity>
+                    <Button onPress={gotoTrackingOrderScreen}>{`Đơn TQ (${data.tracking.length})`}</Button>
+                    <Button onPress={gotoGHN} backgroundColor={'purple.600'}>{`GHN (${data.ghn.length})`}</Button>
+                </VStack>
             </View>
             <View>
                 <Text style={{fontWeight:"bold"}}>Địa chỉ:{data.fullAddress}</Text>
             </View>
-            <View style={{display:"flex",justifyContent:"space-between",flexDirection:"row",flexWrap: "wrap",borderTopWidth:1,borderTopColor:"#e92020",marginTop:10,paddingTop:5}}>
-
-                <Text style={{color:"#f34f06",fontWeight:"bold",marginTop:5}}>
-                    <Text>Tổng hóa đơn:</Text>
-                    <NumberFormat value={data.orderAmount}
-                                  thousandSeparator={true}
-                                  displayType={'text'}
-                                  renderText={(text)=> <Text>{text}</Text>}
-                                  suffix={' đ'} />
-                </Text>
-                <Text style={{color:"#f34f06",fontWeight:"bold",marginTop:5}}>
-                    <Text>COD:</Text>
-                    <NumberFormat value={data.cod}
-                                  thousandSeparator={true}
-                                  displayType={'text'}
-                                  renderText={(text)=> <Text>{text}</Text>}
-                                  suffix={' đ'} />
-                </Text>
-                <Text style={{color:"#f34f06",fontWeight:"bold",marginTop:5}}>
-                    <Text>Lợi nhuận:</Text>
-                    <NumberFormat value={data.profit}
-                                  thousandSeparator={true}
-                                  displayType={'text'}
-                                  renderText={(text)=> <Text>{text}</Text>}
-                                  suffix={' đ'} />
-                </Text>
-                <Text style={{color:"#f34f06",fontWeight:"bold",marginTop:5}}>
-                    <Text>Tỉ suất:</Text>
-                    <NumberFormat value={Math.round((data.profitMargin*100))}
-                                  thousandSeparator={true}
-                                  displayType={'text'}
-                                  renderText={(text)=> <Text>{text}</Text>}
-                                  suffix={'%'} />
-                </Text>
+            <Divider marginTop={'3'} marginBottom={'3'}/>
+            <View style={{flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}>
+                <HStack space={'1'}>
+                    <Text style={{fontWeight:"bold",paddingRight:20}}>Giá vốn:</Text>
+                    <CurrencyFormat value={data.cost} style={{fontWeight:"bold",color:"#ff6500",paddingLeft:10}}  surfix={'đ'}/>
+                </HStack>
+                <Button backgroundColor={'purple.600'} onPress={gotoDetail}>Xem hóa đơn</Button>
             </View>
+            <View style={{flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}>
+                <HStack space={'1'}>
+                    <Text style={{fontWeight:"bold",paddingRight:20}}>Lợi nhuận:</Text>
+                    <CurrencyFormat value={data.profit} style={{fontWeight:"bold",color:"#ff6500"}}   surfix={'đ'}/>
+                </HStack>
+                <HStack space={'1'}>
+                    <Text style={{fontWeight:"bold",paddingRight:20}}>Tỉ xuất:</Text>
+                    <Text style={{fontWeight:"bold",color:"#ff6500"}}>{Math.round((data.profitMargin*100))} %</Text>
+                </HStack>
+
+            </View>
+
         </View>
     )
 }

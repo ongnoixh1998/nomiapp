@@ -11,3 +11,4 @@ export const AWAITINGADDINTIONDELIVERY_ACTION = "awaitingadditionaldelivery";
 export const PARTIALPAID_ACTION = "partiallypaid";
 export const PAID_ACTION = "paid";
 export const SEARCH_ACTION = "search"
+export const CALLBACK_SEARCH_LAYOUT = "CALLBACK_SEARCH_LAYOUT"

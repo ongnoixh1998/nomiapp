@@ -5,7 +5,7 @@ import {
     findAllTrackingOrder_API,
     findById_API,
     qrScan_API,
-    receivePackage_API
+    receivePackage_API, statisticArea_API, updateTrackPackage_API
 } from "../api/OrderAPI";
 export const actions = async (action:string,ids:number[])=>{
     return await action_API(action,ids)
@@ -40,6 +40,12 @@ export const countByStatus = async (status:string)=>{
 export const createAndUpdate = async (params:any)=>{
     return await createAndUpdate_API(params);
 }
+export const updateTrackPackage = async (trackId:number,trackPackage:number)=>{
+    return await updateTrackPackage_API(trackId,trackPackage);
+}
+export const statictisArea = async (params:{option:string,status:string,year:string,host:string})=>{
+    return await statisticArea_API(params)
+}
 export const LISTSTATUS = [
     {
         title:'Đang xử lý',
@@ -58,6 +64,12 @@ export const LISTSTATUS = [
         icon:'',
         value:0,
         status:'success'
+    },
+    {
+        title:'Chưa hoàn thành',
+        icon:'',
+        value:0,
+        status:'incomplate'
     },
     {
         title:'Đang vận chuyển',

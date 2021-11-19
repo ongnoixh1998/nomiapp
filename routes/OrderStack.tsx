@@ -12,6 +12,7 @@ import GHNScreen from "../views/ghn/GHNScreen";
 import TrackingOrderScreen from "../views/order/TrackingOrderScreen";
 import OrderSearchScreen from "../views/order/OrderSearchScreen";
 
+
 const OrderStack =  ({navigation,route}:any)=>{
     const listHiderTabbar = ["qrcode","ghndetail",'detail','orderaddress'];
     React.useLayoutEffect(() => {
@@ -29,6 +30,7 @@ const OrderStack =  ({navigation,route}:any)=>{
                           component={OrderScreen} />
             <Stack.Screen name={'qrcode'}
                           key={'qrcode'}
+                          options={{headerTitleAlign:'center'}}
                           component={QRScreen} />
             <Stack.Screen name={'detail'}
                           key={'detail'}
@@ -40,24 +42,24 @@ const OrderStack =  ({navigation,route}:any)=>{
                           component={OrderAddressScreen} />
             <Stack.Screen name={'qrscanned'}
                           key={'qrscanned'}
-                          options={{title:"Hóa đơn quét được"}}
+                          options={{title:"Hóa đơn quét được",headerTitleAlign:'center',headerTitleStyle:{color:"#f30101"}}}
                           component={QRScannedScreen} />
             <Stack.Screen name={'ghndetail'}
                           key={'ghndetail'}
-                          options={{title:"Chi tiết đơn hàng"}}
+                          options={{title:"Chi tiết đơn hàng",headerTitleAlign:'center'}}
                           component={GHNDetailScreen} />
 
             <Stack.Screen name={'trackingorder'}
                           key={'trackingorder'}
-                          options={{title:"Thông tin vận chuyển TQ"}}
+                          options={{title:"Thông tin vận chuyển TQ",headerTitleAlign:'center',}}
                           component={TrackingOrderScreen} />
             <Stack.Screen name={'ordersearch'}
                           key={'ordersearch'}
-                          options={{title:"Tìm kiếm hóa đơn"}}
+                          options={{title:"Tìm kiếm",headerTitleAlign:'center'}}
                           component={OrderSearchScreen} />
             <Stack.Screen name={'ghnscreen'}
                           key={'ghnscreen'}
-                          options={{title:"Danh sách hóa đơn GHN"}}
+                          options={{title:"GHN",headerTitleAlign:"center",headerTitleStyle:{color:"#ff0000"}}}
                           component={GHNScreen} />
         </Stack.Navigator>
     )

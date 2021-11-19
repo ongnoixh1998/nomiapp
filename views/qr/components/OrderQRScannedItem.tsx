@@ -1,19 +1,30 @@
 
 import {Button, Divider, Stack, Text, Modal, VStack, HStack, Input} from "native-base";
-import React, {memo, useEffect, useState} from "react";
-import {StyleSheet, TextInput, View} from "react-native";
+import React, {memo, useCallback, useEffect, useState} from "react";
+import {StyleSheet, TextInput, TouchableOpacity, View,Linking} from "react-native";
 import NumberFormat from "react-number-format";
-import {receivePackage} from "../../../services/OrderService";
+import {receivePackage, updateTrackPackage} from "../../../services/OrderService";
 import {useNavigation} from "@react-navigation/native";
+import Feather from 'react-native-vector-icons/Feather'
+import {Picker} from "@react-native-picker/picker";
+import NumberPickerDialog from "../../../components/NumberPickerDialog";
+import CurrencyFormat from "../../../components/CurrencyFormat";
+
 interface OrderQRScannedItemType {
     data:any,
     onChangeValue?:any
+}
+const EVENT = {
+    PACKAGE:"PACKAGE",
+    RECEIVE:"RECEIVE"
 }
 const OrderQRScannedItem = ({data,onChangeValue}:OrderQRScannedItemType)=>{
     const navigation = useNavigation();
     const [showModal, setShowModal] = useState(false)
     const [packageReceived,setPackageReceived] = useState<any>(0)
-
+    const [numberPicker,setNumberPicker] = useState(false);
+    const [defaultValuePicker,setDefaulValuePicker] = useState('')
+    const [event,setEvent] = useState<string>('');
     useEffect(()=>{
         setPackageReceived(data.countPackage?data.countPackage:0);
     },[])
@@ -43,14 +54,11 @@ const OrderQRScannedItem = ({data,onChangeValue}:OrderQRScannedItemType)=>{
     const toggleModal = ()=>{
         setShowModal(!showModal);
     }
-    const handleGet = ()=>{
-        receivePackage(data.trackingId,packageReceived).then((results)=>{
+    const handleGet = (value:number)=>{
+        receivePackage(data.trackingId,value).then((results)=>{
             if (results.success){
-                onChangeValue('viStatusCode','received',data.trackingId,packageReceived)
-            }else {
-
+                onChangeValue('viStatusCode','received',data.trackingId,value)
             }
-            toggleModal()
         })
     }
     const gotoTrackingOrderScreen = ()=>{
@@ -60,6 +68,44 @@ const OrderQRScannedItem = ({data,onChangeValue}:OrderQRScannedItemType)=>{
             id:data.id
         });
     }
+    const gotoCall = ()=>{
+        Linking.openURL(`tel:${data.phoneNumber}`)
+    }
+    const openNumberPicker = (event?:string)=>{
+        setNumberPicker(!numberPicker);
+        if (event){
+            setEvent(event);
+            if (event===EVENT.RECEIVE){
+                setDefaulValuePicker(data.countPackage);
+                console.log("receive")
+            }else {
+                setDefaulValuePicker('');
+                console.log("defaul")
+            }
+        }
+    }
+    const onChangeValuePackage = useCallback((value:any)=>{
+
+        setEvent((eventData) =>{
+
+            switch (eventData){
+                case EVENT.PACKAGE:
+                    updateTrackPackage(data.trackingId,value).then((results)=>{
+                        onChangeValue('countPackage',value,data.trackingId)
+                    })
+                    break;
+                case EVENT.RECEIVE:
+                    handleGet(value);
+                    break;
+                default: console.log("asdasd");
+            }
+            return eventData
+        })
+
+
+
+    },[])
+
     const renderModal = ()=>{
         return(
             <Modal isOpen={showModal} onClose={() => setShowModal(false)} size="lg">
@@ -81,8 +127,7 @@ const OrderQRScannedItem = ({data,onChangeValue}:OrderQRScannedItemType)=>{
                     </Modal.Body>
                     <Modal.Footer>
                         <Button
-                            flex="1"
-                            onPress={handleGet}>
+                            flex="1">
                             Xác nhận
                         </Button>
                     </Modal.Footer>
@@ -92,61 +137,72 @@ const OrderQRScannedItem = ({data,onChangeValue}:OrderQRScannedItemType)=>{
     }
     return(
         <View style={{backgroundColor:"#fff",borderRadius:10,padding:10}}>
-            <Text style={styles.fontBold}>
-                Tên SP:
-                <Text style={{...styles.fontBold,color:"#9702f3"}}>{data.productName}</Text>
-            </Text>
-           <View style={{display:"flex",flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}>
-               <Text style={styles.fontBold}>Đơn hàng:{data.id}</Text>
-               <Text style={{...getColor(data.viStatusCode),padding:5,borderRadius:10,fontWeight:"bold"}}>{getStatusName(data.viStatusCode)}</Text>
+           <View style={{...styles.row}}>
+               <Text style={styles.fontBold}>
+                   Tên SP:
+                   <Text style={{...styles.fontBold,color:"#9702f3"}}>{data.productName}</Text>
+               </Text>
+               <TouchableOpacity onPress={()=>openNumberPicker(EVENT.PACKAGE)}>
+                   <Text style={{backgroundColor:"#4296f6",padding:5,borderRadius:10,fontWeight:"bold",color:"#fff",overflow:'hidden'}}>Số kiện:{data.countPackage?data.countPackage:'Không có'}</Text>
+               </TouchableOpacity>
            </View>
-            <Text style={styles.fontBold}>
-                Tên khách:
-                <Text style={{...styles.fontBold,color:"#9702f3"}}>{data.fullName}</Text>
-            </Text>
+            <View style={{...styles.row}}>
+                <Text style={styles.fontBold}>Đơn hàng:{data.id}</Text>
+                <TouchableOpacity onPress={()=>openNumberPicker(EVENT.RECEIVE)}>
+                    <Text style={{...getColor(data.viStatusCode),padding:5,borderRadius:10,fontWeight:"bold",color:"#fff",overflow:'hidden'}}>{getStatusName(data.viStatusCode)}</Text>
+                </TouchableOpacity>
+            </View>
 
-            <Text style={styles.fontBold}>
-                SDT:
-                <Text style={{...styles.fontBold,color:"#9702f3"}}> {data.phoneNumber}</Text>
+            <View style={{flexDirection:"row",flexWrap:"wrap",marginTop:10}}>
+                <VStack space={'3'} style={{width:'70%'}}>
+                    <View style={{...styles.row,paddingRight:50}}>
+                        <Text style={{fontWeight:"bold"}}>Tên khách:</Text>
+                        <Text style={{fontWeight:"bold",color:"#fd4b04"}}>{data.fullName}</Text>
+                    </View>
+                    <View style={{...styles.row,paddingRight:50}}>
+                        <Text style={{fontWeight:"bold"}}>Tổng đơn:</Text>
+                        <CurrencyFormat value={data.orderAmount} surfix={'đ'} style={{fontWeight:"bold",color:"#fd4b04"}}/>
+                    </View>
+                    <View style={{...styles.row,paddingRight:50}}>
+                        <Text style={{fontWeight:"bold"}}>Đã thanh toán:</Text>
+                        <CurrencyFormat value={data.paid} surfix={'đ'} style={{fontWeight:"bold",color:"#fd4b04"}}/>
+                    </View>
+                    <View style={{...styles.row,paddingRight:50}}>
+                        <Text style={{fontWeight:"bold"}}>COD:</Text>
+                        <CurrencyFormat value={String((data.orderAmount - data.paid))} surfix={'đ'} style={{fontWeight:"bold",color:"#fd4b04"}}/>
+                    </View>
 
-            </Text>
-            <Text style={styles.fontBold}>
-                <Text style={styles.fontBold}>Tiền hàng:</Text>
-                <NumberFormat value={data.productAmount}
-                              displayType={'text'}
-                              suffix={" đ"}
-                              renderText={(text)=><Text style={{...styles.fontBold,color:"#f33f09"}}>{text}</Text>}
-                              thousandSeparator={true}/>
-            </Text>
-            <Text >
-                <Text style={styles.fontBold}>Tổng hóa đơn:</Text>
-                <NumberFormat value={data.orderAmount}
-                              displayType={'text'}
-                              suffix={" đ"}
-                              renderText={(text)=><Text style={{...styles.fontBold,color:"#f33f09"}}>{text}</Text>}
-                              thousandSeparator={true}/>
-            </Text>
-            <Text style={styles.fontBold}>Địa chỉ:{data.fullAddress}</Text>
-            <Divider my="2" />
-           <Stack justifyContent={'flex-end'} direction={'row'}  space={3}>
-               <Button backgroundColor={'purple.500'}
-                       onPress={gotoTrackingOrderScreen}>Xem tất cả TTVC</Button>
-               {
-                   data.viStatusCode?
-                   <Button color={'amber.200'}
-                           onPress={toggleModal} >Đã nhận hàng</Button> :
-                   <Button backgroundColor={'amber.400'}
-                           onPress={toggleModal}>Nhận hàng</Button>
-               }
+                </VStack>
+                <VStack space={'3'} style={{width:'30%',alignItems:"flex-end"}}>
+                    <TouchableOpacity onPress={gotoCall}>
+                        <Feather name={'phone-call'} size={25} color={'#ff0000'} />
+                    </TouchableOpacity>
+                    <Button onPress={handleCreateGHN}>Tạo GHN</Button>
+                    <Button backgroundColor={'purple.500'}
+                            style={{marginTop:10}}
+                            onPress={gotoTrackingOrderScreen}>Xem TTVC</Button>
+                </VStack>
+            </View>
+            <View style={{...styles.row}}>
+                <Text style={styles.fontBold}>Địa chỉ:{data.fullAddress}</Text>
+            </View>
+            <NumberPickerDialog isOpen={numberPicker}
+                                defaultValue={defaultValuePicker}
+                                onChangeValue={onChangeValuePackage}/>
 
-               <Button backgroundColor={'purple.500'}
-                       onPress={handleCreateGHN}>Tạo GHN</Button>
-           </Stack>
+
             {renderModal()}
         </View>
     )
 }
 const styles = StyleSheet.create({
+    row:{
+      flexDirection:"row",
+      justifyContent:"space-between",
+      alignItems:"center",
+      marginTop:5,
+        marginBottom:5
+    },
     fontBold:{
         fontWeight:'bold'
     }

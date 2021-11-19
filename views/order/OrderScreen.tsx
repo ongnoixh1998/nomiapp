@@ -4,7 +4,7 @@ import OrderItem from "./components/OrderItem";
 import {actions, findAll} from "../../services/OrderService";
 import Layout from "../../layouts/Layout";
 import LayoutOrder from "../../layouts/LayoutOrder";
-import {SEARCH_ACTION} from "../../constants/ACTION_CONSTANTS";
+import {CALLBACK_SEARCH_LAYOUT, SEARCH_ACTION} from "../../constants/ACTION_CONSTANTS";
 import {useNavigation} from "@react-navigation/native";
 import {useAddEvent, useRemoveEvent} from "../../hook/useEventListener";
 import {CALLBACK_SEARCH_ORDER_SCREEN} from "../../constants/EVENT_CONSTANTS";
@@ -48,8 +48,9 @@ export default function OrderScreen(props: any) {
             setHost(hostValue);
             setKeyword(keywordValue);
             findAll(0, pageSize, filterValue, hostValue, keywordValue).then((results) => {
-
                 setList(results.data.content);
+                setTotalPage(results.data.totalPages);
+                setTotalElement(results.data.totalElements);
                 setLoading(false);
             })
         })
@@ -61,16 +62,25 @@ export default function OrderScreen(props: any) {
         // @ts-ignore
         navigation.navigate("ordersearch")
     }
-    const callbackActions = useCallback((actionValue) => {
+    const callbackActions = useCallback((actionValue,data:any) => {
         if (actionValue === SEARCH_ACTION) {
             gotoSearchScreen();
-        } else {
+        } else if (actionValue===CALLBACK_SEARCH_LAYOUT) {
+            findAll(0, pageSize, filter, host, data).then((results) => {
+                setList(results.data.content);
+                setTotalPage(results.data.totalPages);
+                setTotalElement(results.data.totalElements);
+                setLoading(false);
+            })
+        }else {
 
             if (listChecked.length > 0) {
                 actions(actionValue, listChecked).then((results) => {
                     setLoading(true)
                     findAll(page, pageSize, filter, host, keyword).then((results) => {
                         setList(results.data.content);
+                        setTotalPage(results.data.totalPages);
+                        setTotalElement(results.data.totalElements);
                         setLoading(false);
                         setListChecked([])
                     })
@@ -117,11 +127,11 @@ export default function OrderScreen(props: any) {
         const newPage = page + 1
 
         if (newPage<totalPage){
-            console.log(newPage,totalPage);
+
             setLoadmore(true)
             setPage(newPage);
             findAll(newPage, pageSize, filter, host, keyword).then((results) => {
-                console.log(results.data.content);
+
                 setList([...list,...results.data.content]);
                 setTotalPage(results.data.totalPages);
                 setTotalElement(results.data.totalElements);
@@ -132,7 +142,7 @@ export default function OrderScreen(props: any) {
 
     }
     return (
-        <LayoutOrder loading={loading} callbackActions={callbackActions}>
+        <LayoutOrder loading={loading} callbackActions={callbackActions} totalElements={totalElement}>
             <View style={{flex: 1}}>
                 <FlatList data={list}
                           refreshing={refreshing}
