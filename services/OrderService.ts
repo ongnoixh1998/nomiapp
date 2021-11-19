@@ -10,7 +10,7 @@ import {
 export const actions = async (action:string,ids:number[])=>{
     return await action_API(action,ids)
 }
-export const findAll = async (page?:number,pageSize?:number,filter?:string,host?:number,keyword?:string)=>{
+export const findAll = async (page?:number,pageSize?:number,filter?:string,host?:number|string,keyword?:string)=>{
     const params = new URLSearchParams();
     if (page) params.append("page",String(page));
     if (pageSize) params.append("pageSize",String(pageSize));

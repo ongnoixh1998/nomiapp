@@ -115,20 +115,20 @@ const OrderAddressScreen = ()=>{
                        onChangeText={(text)=>setAddress(text)}
                        placeholder={'Địa chỉ nhà'}/>
                 <RNPickerSelect
-                    style={{viewContainer:{backgroundColor:"#fff",marginTop:5,borderRadius:5}}}
+                    style={{viewContainer:{backgroundColor:"#fff",marginTop:5,borderRadius:5,padding:10}}}
                     useNativeAndroidPickerStyle={true}
                     value={getValueProvince(province)?getValueProvince(province).value:''}
                     placeholder={{label:'Chọn tỉnh/TP',color:'#ef1e04'}}
                     onValueChange={handleSelectProvice}
                     items={provinces}/>
                 <RNPickerSelect
-                    style={{viewContainer:{backgroundColor:"#fff",marginTop:5,borderRadius:5}}}
+                    style={{viewContainer:{backgroundColor:"#fff",marginTop:5,borderRadius:5,padding:10}}}
                     placeholder={{label:'Chọn quận/Huyện',color:'#ef1e04'}}
                     value={getValueDictrict(dictrict)?getValueDictrict(dictrict).value:''}
                     onValueChange={handleSelectDictrict}
                     items={dictricts}/>
                 <RNPickerSelect
-                    style={{viewContainer:{backgroundColor:"#fff",marginTop:5,borderRadius:5}}}
+                    style={{viewContainer:{backgroundColor:"#fff",marginTop:5,borderRadius:5,padding:10}}}
                     placeholder={{label:'Chọn xã/phường',color:'#ef1e04'}}
                     value={getValueWard(ward)?getValueWard(ward).value:''}
                     onValueChange={handleSelectWard}

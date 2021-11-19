@@ -120,6 +120,7 @@ export default function OrderScreen(props: any) {
             setList(results.data.content);
             setListChecked([]);
             setRefreshing(false)
+            setKeyword('')
         })
     }
     const loadMore = () => {

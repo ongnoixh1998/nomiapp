@@ -106,18 +106,24 @@ const StatictisOrder = ()=>{
     }
     return(
         <View style={{backgroundColor:"#fff",borderRadius:10,overflow:"hidden",paddingTop:10,paddingBottom:10}}>
-            <View style={{flexDirection:"row",justifyContent:"space-between",}}>
+            <View style={{flexDirection:"row",justifyContent:"space-between",padding:10}}>
                 <View style={{flex:1}}>
-                    <Text style={{fontWeight:"bold",paddingLeft:10}}>Trạng thái</Text>
-                    <Picker onValueChange={(value, index)=>setStatus(value)} value={status} items={statusOptions()}/>
+                    <Text style={{fontWeight:"bold"}}>Trạng thái</Text>
+                    <Picker onValueChange={(value, index)=>setStatus(value)}
+                            style={{viewContainer:{paddingTop:10,paddingBottom:10}}}
+                            value={status} items={statusOptions()}/>
                 </View>
                 <View style={{flex:1}}>
-                    <Text style={{fontWeight:"bold",paddingLeft:10}}>Thời gian</Text>
-                    <Picker onValueChange={(value, index)=>setOption(value)} value={option} items={options()}/>
+                    <Text style={{fontWeight:"bold"}}>Thời gian</Text>
+                    <Picker onValueChange={(value, index)=>setOption(value)}
+                            style={{viewContainer:{paddingTop:10,paddingBottom:10}}}
+                            value={option} items={options()}/>
                 </View>
                 <View style={{flex:1}}>
-                    <Text style={{fontWeight:"bold",paddingLeft:10}}>Web</Text>
-                    <Picker onValueChange={(value, index)=>setHost(value)} value={host} items={partner}/>
+                    <Text>Web</Text>
+                    <Picker onValueChange={(value, index)=>setHost(value)}
+                            style={{viewContainer:{paddingTop:10,paddingBottom:10}}}
+                            value={host} items={partner}/>
                 </View>
             </View>
             <View style={{flexDirection:"row",justifyContent:"space-between",padding:10}}>

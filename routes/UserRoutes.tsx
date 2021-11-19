@@ -7,7 +7,7 @@ const Stack = createNativeStackNavigator();
 
 export default function (){
     return(
-        <Stack.Navigator screenOptions={{statusBarStyle:'auto'}} >
+        <Stack.Navigator >
             <Stack.Screen name={'user'}
 
                           options={{headerShown:false}}

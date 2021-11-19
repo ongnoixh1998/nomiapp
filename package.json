@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "run-production": "react-native run-android --variant=release",
+    "run-iosproduction": "react-native run-ios --variant=release",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
