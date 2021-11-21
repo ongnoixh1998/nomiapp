@@ -3,7 +3,7 @@ import {
     ORDER_ACTION,
     ORDER_COUNT_BY_STATUS, ORDER_CREATE,
     ORDER_FINDALL,
-    ORDER_FINDBYID,
+    ORDER_FINDBYID, ORDER_QUICKVIEW_UPDATE,
     ORDER_TRACKING,
     QR_SCAN, REPORT_STATISTIC_AREA,
     TRACK_RECEIVE_PRODUCT, UPDATE_TRACK_PACKAGE
@@ -16,6 +16,9 @@ export const findAll_API = async (params:URLSearchParams)=>{
 export const findById_API = async (id:number)=>{
     const respones = await fetchAPI(ORDER_FINDBYID+"?id="+id,"GET");
     return respones
+}
+export const quickViewUpdate_API= async (data:any)=>{
+    return await fetchAPI(ORDER_QUICKVIEW_UPDATE,"POST",data);
 }
 export const qrScan_API = async (id:string)=>{
     const respones = await fetchAPI(QR_SCAN+"?laddingcode="+id,"GET");

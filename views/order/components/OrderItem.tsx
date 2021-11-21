@@ -1,25 +1,42 @@
 import {Linking, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import React, {memo, useEffect} from "react";
+import React, {memo, useCallback, useEffect, useRef, useState} from "react";
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import { useNavigation } from "@react-navigation/native";
 import moment from 'moment';
-import NumberFormat from 'react-number-format';
 import CheckBox from '@react-native-community/checkbox';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {Button, Divider, HStack, useToast, VStack} from "native-base";
-import CurrencyFormat from "../../../components/CurrencyFormat";
+import ViewShot, {captureRef} from "react-native-view-shot";
 import Feather from "react-native-vector-icons/Feather";
+import RNFS,{} from 'react-native-fs'
+import RNFetchBlob from 'react-native-fetch-blob'
+
+import CurrencyFormat from "../../../components/CurrencyFormat";
+import NumberPickerDialog from "../../../components/NumberPickerDialog";
+import {quickviewUpdate} from "../../../services/OrderService";
+
 interface OrderItemType {
     data:any,
     onChangeCheck?:any,
     checked:boolean
 }
+const EVEN_QUICK_EDIT = {
+    SHIP:"SHIP",
+    PAID:"PAID",
+
+}
 const OrderItem = ({data,onChangeCheck,checked}:OrderItemType)=>{
     const toast = useToast();
+    const [dataState,setDataState] = useState(data)
+    const [quickEdit,setQuickEdit] = useState(false);
+    const [defaultQuickEdit,setDefaultQuickEdit] = useState('0');
+    const [eventQuickEdit,setEventQuickEdit] = useState('');
     useEffect(()=>{
 
     },[])
     const navigation = useNavigation();
+    const capture = useRef<any>();
+
     const gotoDetail = ()=>{
         // @ts-ignore
         navigation.navigate('detail', {
@@ -116,6 +133,68 @@ const OrderItem = ({data,onChangeCheck,checked}:OrderItemType)=>{
     const gotoCall = ()=>{
         Linking.openURL(`tel:${data.phoneNumber}`)
     }
+    const captureSentToCustomer = ()=>{
+
+        captureRef(capture, {
+            format: "jpg",
+            quality: 1,
+            result:"base64"
+        }).then(base64Data => {
+            const dir  = RNFetchBlob.fs.dirs.PictureDir+"/nomiapp/";
+            RNFetchBlob.fs.exists(dir).then((checked)=>{
+                if (!checked){
+                    RNFetchBlob.fs.mkdir(dir);
+                }
+            });
+            const filename = dir+"nomiapp-"+new Date().getTime()+".jpg";
+            RNFetchBlob.fs.writeFile(filename,base64Data,'base64').then((results)=>{
+
+            });
+            RNFetchBlob.fs.scanFile([ { path : filename, mime : 'image/jpg' } ]).then(() => {
+              Linking.openURL("https://zalo.me/"+data.phoneNumber).then((results)=>{
+
+              });
+            })
+        });
+
+
+    }
+    const getFileName = (filename:string)=>{
+        return filename.substring(filename.lastIndexOf("/")+1,filename.length);
+    }
+    const toggleQuickEdit = (event:string)=>{
+        switch (event){
+            case EVEN_QUICK_EDIT.SHIP:setDefaultQuickEdit(dataState.ship);break;
+            case EVEN_QUICK_EDIT.PAID:setDefaultQuickEdit(dataState.paid);break;
+        }
+        setQuickEdit(!quickEdit);
+        setEventQuickEdit(event);
+    }
+    const onChangeValueQuickEdit = useCallback((value)=>{
+        setDataState((prevDataState:any)=>{
+            const newData = {...prevDataState};
+            setEventQuickEdit((prevEvent)=>{
+                switch (prevEvent){
+                    case EVEN_QUICK_EDIT.PAID:
+                        newData.paid = value
+                        break;
+                    case EVEN_QUICK_EDIT.SHIP:
+                        newData.ship = value
+                        break;
+                }
+                quickviewUpdate(newData).then((results)=>{})
+                return prevEvent;
+            })
+            newData.orderAmount = parseInt(newData.productAmount)+parseInt(newData.ship);
+            newData.profit = parseInt(newData.productAmount)-parseInt(newData.cost)-parseInt(newData.incurredCost);
+            newData.cod = parseInt(newData.orderAmount)-parseInt(newData.paid);
+            newData.profitMargin = parseFloat(String(newData.profit / newData.productAmount)).toFixed(2);
+            return newData;
+        })
+
+
+    },[])
+
     return(
         <View style={styles.container}>
             <View style={{display:'flex',flexDirection:'row',alignItems:'center',justifyContent:"space-between",borderBottomWidth:1,marginBottom:5,borderColor:"#ea6d09",padding:5}}>
@@ -134,66 +213,75 @@ const OrderItem = ({data,onChangeCheck,checked}:OrderItemType)=>{
                     </View>
                 </View>
             </View>
-            <View style={{display:"flex",flexDirection:"row",alignItems:"center"}}>
-                <Text style={{color:"#0b21e5",fontWeight:"bold"}}>{getDateTime(data.createDate)}</Text>
-                <Text> - </Text>
-                <Text style={{fontWeight:"bold"}}>{data.fullName}</Text>
+            <ViewShot ref={capture} style={{backgroundColor:"#fff"}}>
+                <View style={{display:"flex",flexDirection:"row",alignItems:"center"}}>
+                    <Text style={{color:"#0b21e5",fontWeight:"bold"}}>{getDateTime(dataState.createDate)}</Text>
+                    <Text> - </Text>
+                    <Text style={{fontWeight:"bold"}}>{dataState.fullName}</Text>
 
-            </View>
-            <View style={{flexDirection:"row",flexWrap:"wrap",marginTop:10}}>
-                <VStack space={'3'} style={{width:'60%'}}>
-                    <View style={{flexDirection:"row",justifyContent:"space-between",paddingRight:50}}>
-                        <Text style={{fontWeight:"bold"}}>Tiền hàng:</Text>
-                        <CurrencyFormat value={data.productAmount} style={{fontWeight:"bold"}} surfix={'đ'}/>
-                    </View>
-                    <View style={{flexDirection:"row",justifyContent:"space-between",paddingRight:50}}>
-                        <Text style={{fontWeight:"bold"}}>Tiền ship:</Text>
-                        <CurrencyFormat value={data.ship} style={{fontWeight:"bold"}} surfix={'đ'}/>
-                    </View>
-                    <View style={{flexDirection:"row",justifyContent:"space-between",paddingRight:50}}>
-                        <Text style={{fontWeight:"bold"}}>Đã thanh toán:</Text>
-                        <CurrencyFormat value={data.paid} style={{fontWeight:"bold"}} surfix={'đ'}/>
-                    </View>
-                    <View style={{flexDirection:"row",justifyContent:"space-between",paddingRight:50}}>
-                        <Text style={{fontWeight:"bold"}}>Tổng đơn:</Text>
-                        <CurrencyFormat value={data.orderAmount} style={{fontWeight:"bold"}} surfix={'đ'}/>
-                    </View>
-                    <View style={{flexDirection:"row",justifyContent:"space-between",paddingRight:50}}>
-                        <Text style={{fontWeight:"bold"}}>COD:</Text>
-                        <CurrencyFormat value={String(data.orderAmount-data.paid)} style={{fontWeight:"bold"}} surfix={'đ'}/>
-                    </View>
-                </VStack>
-                <VStack space={'3'} style={{width:'40%',alignItems:"flex-end"}}>
-                    <TouchableOpacity onPress={gotoCall}>
-                        <Feather name={'phone-call'} size={25} color={'#ff0000'} />
-                    </TouchableOpacity>
-                    <Button onPress={gotoTrackingOrderScreen}>{`Đơn TQ (${data.tracking.length})`}</Button>
-                    <Button onPress={gotoGHN} backgroundColor={'purple.600'}>{`GHN (${data.ghn.length})`}</Button>
-                </VStack>
-            </View>
-            <View>
-                <Text style={{fontWeight:"bold"}}>Địa chỉ:{data.fullAddress}</Text>
-            </View>
+                </View>
+                <View style={{flexDirection:"row",flexWrap:"wrap",marginTop:10}}>
+                    <VStack space={'3'} style={{width:'60%'}}>
+                        <View style={{flexDirection:"row",justifyContent:"space-between",paddingRight:50}}>
+                            <Text style={{fontWeight:"bold"}}>Tiền hàng:</Text>
+                            <CurrencyFormat value={dataState.productAmount} style={{fontWeight:"bold"}} surfix={'đ'}/>
+                        </View>
+                        <View style={{flexDirection:"row",justifyContent:"space-between",paddingRight:50}}>
+                            <Text style={{fontWeight:"bold"}}>Tiền ship:</Text>
+                            <TouchableOpacity onPress={()=>toggleQuickEdit(EVEN_QUICK_EDIT.SHIP)}>
+                                <CurrencyFormat value={dataState.ship} style={{fontWeight:"bold"}} surfix={'đ'}/>
+                            </TouchableOpacity>
+
+                        </View>
+                        <View style={{flexDirection:"row",justifyContent:"space-between",paddingRight:50}}>
+                            <Text style={{fontWeight:"bold"}}>Đã thanh toán:</Text>
+                            <TouchableOpacity onPress={()=>toggleQuickEdit(EVEN_QUICK_EDIT.PAID)}>
+                                <CurrencyFormat value={dataState.paid} style={{fontWeight:"bold"}} surfix={'đ'}/>
+                            </TouchableOpacity>
+
+                        </View>
+                        <View style={{flexDirection:"row",justifyContent:"space-between",paddingRight:50}}>
+                            <Text style={{fontWeight:"bold"}}>Tổng đơn:</Text>
+                            <CurrencyFormat value={dataState.orderAmount} style={{fontWeight:"bold"}} surfix={'đ'}/>
+                        </View>
+                        <View style={{flexDirection:"row",justifyContent:"space-between",paddingRight:50}}>
+                            <Text style={{fontWeight:"bold"}}>COD:</Text>
+                            <CurrencyFormat value={String(dataState.orderAmount-dataState.paid)} style={{fontWeight:"bold"}} surfix={'đ'}/>
+                        </View>
+                    </VStack>
+                    <VStack space={'3'} style={{width:'40%',alignItems:"flex-end"}}>
+                        <TouchableOpacity onPress={gotoCall}>
+                            <Feather name={'phone-call'} size={25} color={'#ff0000'} />
+                        </TouchableOpacity>
+                        <Button onPress={gotoTrackingOrderScreen}>{`Đơn TQ (${dataState.tracking.length})`}</Button>
+                        <Button onPress={gotoGHN} backgroundColor={'purple.600'}>{`GHN (${dataState.ghn.length})`}</Button>
+                        <Button onPress={captureSentToCustomer}>Gửi khách</Button>
+                    </VStack>
+                </View>
+                <View>
+                    <Text style={{fontWeight:"bold"}}>Địa chỉ:{dataState.fullAddress}</Text>
+                </View>
+            </ViewShot>
             <Divider marginTop={'3'} marginBottom={'3'}/>
             <View style={{flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}>
                 <HStack space={'1'}>
                     <Text style={{fontWeight:"bold",paddingRight:20}}>Giá vốn:</Text>
-                    <CurrencyFormat value={data.cost} style={{fontWeight:"bold",color:"#ff6500",paddingLeft:10}}  surfix={'đ'}/>
+                    <CurrencyFormat value={dataState.cost} style={{fontWeight:"bold",color:"#ff6500",paddingLeft:10}}  surfix={'đ'}/>
                 </HStack>
                 <Button backgroundColor={'purple.600'} onPress={gotoDetail}>Xem hóa đơn</Button>
             </View>
             <View style={{flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}>
                 <HStack space={'1'}>
                     <Text style={{fontWeight:"bold",paddingRight:20}}>Lợi nhuận:</Text>
-                    <CurrencyFormat value={data.profit} style={{fontWeight:"bold",color:"#ff6500"}}   surfix={'đ'}/>
+                    <CurrencyFormat value={dataState.profit} style={{fontWeight:"bold",color:"#ff6500"}}   surfix={'đ'}/>
                 </HStack>
                 <HStack space={'1'}>
                     <Text style={{fontWeight:"bold",paddingRight:20}}>Tỉ xuất:</Text>
-                    <Text style={{fontWeight:"bold",color:"#ff6500"}}>{Math.round((data.profitMargin*100))} %</Text>
+                    <Text style={{fontWeight:"bold",color:"#ff6500"}}>{Math.round((dataState.profitMargin*100))} %</Text>
                 </HStack>
 
             </View>
-
+            <NumberPickerDialog isOpen={quickEdit} onChangeValue={onChangeValueQuickEdit} defaultValue={defaultQuickEdit}/>
         </View>
     )
 }

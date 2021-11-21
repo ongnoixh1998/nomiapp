@@ -13,7 +13,7 @@ const NumberPickerDialog = ({isOpen,onChangeValue,defaultValue}: NumnberPickerTy
     const [prevIsOpen, setPrevIsOpen] = useState<boolean>(false);
     useEffect(()=>{
         setValue(defaultValue?defaultValue:'');
-
+        console.log(defaultValue);
     },[defaultValue])
     useEffect(() => {
         if (prevIsOpen && !isOpen){
@@ -32,7 +32,6 @@ const NumberPickerDialog = ({isOpen,onChangeValue,defaultValue}: NumnberPickerTy
     }
     const onPress = (text: any) => {
         if (text === 'Xóa') {
-
             setValue(prevState => {
                 const strState = String(prevState);
                 let newState = strState.slice(0, -1);
@@ -40,7 +39,7 @@ const NumberPickerDialog = ({isOpen,onChangeValue,defaultValue}: NumnberPickerTy
             })
         } else {
             setValue((prevValue) => {
-                return prevValue + text;
+                return String(prevValue) + String(text);
             })
         }
     }

@@ -4,7 +4,7 @@ import {
     findAll_API,
     findAllTrackingOrder_API,
     findById_API,
-    qrScan_API,
+    qrScan_API, quickViewUpdate_API,
     receivePackage_API, statisticArea_API, updateTrackPackage_API
 } from "../api/OrderAPI";
 export const actions = async (action:string,ids:number[])=>{
@@ -45,6 +45,9 @@ export const updateTrackPackage = async (trackId:number,trackPackage:number)=>{
 }
 export const statictisArea = async (params:{option:string,status:string,year:string,host:string})=>{
     return await statisticArea_API(params)
+}
+export const quickviewUpdate = async (data:any)=>{
+    return await quickViewUpdate_API(data);
 }
 export const LISTSTATUS = [
     {
