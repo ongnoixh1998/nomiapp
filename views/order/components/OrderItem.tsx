@@ -10,7 +10,7 @@ import ViewShot, {captureRef} from "react-native-view-shot";
 import Feather from "react-native-vector-icons/Feather";
 import RNFS,{} from 'react-native-fs'
 import RNFetchBlob from 'react-native-fetch-blob'
-
+import CameraRoll, {save} from "@react-native-community/cameraroll";
 import CurrencyFormat from "../../../components/CurrencyFormat";
 import NumberPickerDialog from "../../../components/NumberPickerDialog";
 import {quickviewUpdate} from "../../../services/OrderService";
@@ -140,21 +140,25 @@ const OrderItem = ({data,onChangeCheck,checked}:OrderItemType)=>{
             quality: 1,
             result:"base64"
         }).then(base64Data => {
-            const dir  = RNFetchBlob.fs.dirs.PictureDir+"/nomiapp/";
-            RNFetchBlob.fs.exists(dir).then((checked)=>{
-                if (!checked){
-                    RNFetchBlob.fs.mkdir(dir);
-                }
-            });
-            const filename = dir+"nomiapp-"+new Date().getTime()+".jpg";
-            RNFetchBlob.fs.writeFile(filename,base64Data,'base64').then((results)=>{
 
-            });
-            RNFetchBlob.fs.scanFile([ { path : filename, mime : 'image/jpg' } ]).then(() => {
-              Linking.openURL("https://zalo.me/"+data.phoneNumber).then((results)=>{
-
-              });
-            })
+            CameraRoll.save("data:image/jpg;base64,"+base64Data,{type:'photo'}).then((value => {
+                console.log(value)
+            }))
+            // RNFetchBlob.fs.exists(dir).then((checked)=>{
+            //     if (!checked){
+            //         RNFetchBlob.fs.mkdir(dir);
+            //     }
+            // });
+            //
+            // const filename = dir+"nomiapp-"+new Date().getTime()+".jpg";
+            // RNFetchBlob.fs.writeFile(filename,base64Data,'base64').then((results)=>{
+            //
+            // });
+            // RNFetchBlob.fs.scanFile([ { path : filename, mime : 'image/jpg' } ]).then(() => {
+            //   Linking.openURL("https://zalo.me/"+data.phoneNumber).then((results)=>{
+            //
+            //   });
+            // })
         });
 
 
