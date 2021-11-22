@@ -1,4 +1,4 @@
-import {Linking, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Linking, Platform, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import React, {memo, useCallback, useEffect, useRef, useState} from "react";
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import { useNavigation } from "@react-navigation/native";
@@ -134,32 +134,34 @@ const OrderItem = ({data,onChangeCheck,checked}:OrderItemType)=>{
         Linking.openURL(`tel:${data.phoneNumber}`)
     }
     const captureSentToCustomer = ()=>{
+        if (Platform.OS === 'ios'){
+            captureRef(capture, {
+                format: "jpg",
+                quality: 1,
+                result:"base64"
+            }).then(base64Data => {
+                CameraRoll.save("data:image/jpg;base64,"+base64Data,{type:'photo'}).then((value => {
+                    Linking.openURL("https://zalo.me/"+data.phoneNumber).then((results)=>{
 
-        captureRef(capture, {
-            format: "jpg",
-            quality: 1,
-            result:"base64"
-        }).then(base64Data => {
+                    });
+                }))
+            })
+        }else {
+            captureRef(capture, {
+                format: "jpg",
+                quality: 1,
 
-            CameraRoll.save("data:image/jpg;base64,"+base64Data,{type:'photo'}).then((value => {
-                console.log(value)
-            }))
-            // RNFetchBlob.fs.exists(dir).then((checked)=>{
-            //     if (!checked){
-            //         RNFetchBlob.fs.mkdir(dir);
-            //     }
-            // });
-            //
-            // const filename = dir+"nomiapp-"+new Date().getTime()+".jpg";
-            // RNFetchBlob.fs.writeFile(filename,base64Data,'base64').then((results)=>{
-            //
-            // });
-            // RNFetchBlob.fs.scanFile([ { path : filename, mime : 'image/jpg' } ]).then(() => {
-            //   Linking.openURL("https://zalo.me/"+data.phoneNumber).then((results)=>{
-            //
-            //   });
-            // })
-        });
+            }).then(uri => {
+                CameraRoll.save(uri,{type:'photo'}).then((value => {
+                    Linking.openURL("https://zalo.me/"+data.phoneNumber).then((results)=>{
+
+                    });
+                }))
+            })
+        }
+
+
+
 
 
     }
